@@ -1,15 +1,11 @@
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.io.BufferedReader;
 
-public class Basket {
+public class Basket implements Serializable {
     protected List<String> products;
     protected List<Integer> prices = new ArrayList<>();
     protected HashMap<String, Integer> basket = new HashMap<>();
@@ -35,8 +31,9 @@ public class Basket {
             }
         }
     }
+
     public void saveTxt(File textFile) throws IOException {
-        try (PrintWriter out = new PrintWriter(textFile)){
+        try (PrintWriter out = new PrintWriter(textFile)) {
             for (String product : this.products) {
                 out.print(product + " ");
             }
@@ -52,14 +49,26 @@ public class Basket {
             System.out.println(ex.getMessage());
         }
     }
-    public int getPrice (String product){
+
+    public void saveBin(File file, Basket cart) throws IOException {
+        try (FileOutputStream out = new FileOutputStream(file)) {
+            ObjectOutputStream stream = new ObjectOutputStream(out);
+            stream.writeObject(cart);
+            stream.close();
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+
+    public int getPrice(String product) {
         return this.prices.get(this.products.indexOf(product));
     }
-    public int getCount (String product){
+
+    public int getCount(String product) {
         return this.basket.get(product);
     }
 
-    public static Basket loadFromTxtFile(File textFile){
+    public static Basket loadFromTxtFile(File textFile) {
         try {
             FileReader in = new FileReader(textFile);
             BufferedReader reader = new BufferedReader(in);
@@ -80,7 +89,18 @@ public class Basket {
                 basket.addToCart(i, count[i]);
             }
             return basket;
-            } catch (IOException ex) {
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        }
+        return null;
+    }
+
+    public static Basket loadFromBinFile(File file) {
+        try (FileInputStream in = new FileInputStream(file)) {
+            ObjectInputStream stream = new ObjectInputStream(in);
+            Basket basket = (Basket) stream.readObject();
+            return basket;
+        } catch (IOException | ClassNotFoundException ex) {
             System.out.println(ex.getMessage());
         }
         return null;

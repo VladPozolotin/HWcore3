@@ -7,13 +7,13 @@ public class Main {
         String[] products = {"Хлеб", "Молоко", "Печенье"};
         int[] prices = {50, 70, 60};
         int cartSum = 0;
-        File basket = new File("basket.txt");
-        Basket cart = Basket.loadFromTxtFile(basket);
+        File basket = new File("basket.bin");
+        Basket cart = Basket.loadFromBinFile(basket);
         if (cart == null) {
             cart = new Basket(products, prices);
         } else {
-            for (String product : products){
-                cartSum = cartSum + (cart.getPrice(product)*cart.getCount(product));
+            for (String product : products) {
+                cartSum = cartSum + (cart.getPrice(product) * cart.getCount(product));
             }
         }
         System.out.println("Ассортимент:");
@@ -41,7 +41,7 @@ public class Main {
                         System.out.println("Некорректное количество товара.");
                     } else {
                         cart.addToCart(itemNum, itemCount);
-                        cart.saveTxt(basket);
+                        cart.saveBin(basket, cart);
                         int itemPrice = prices[itemNum];
                         cartSum += (itemPrice * itemCount);
                     }
@@ -54,7 +54,7 @@ public class Main {
             System.out.println("Пусто");
         } else {
             cart.printCart();
-            }
+        }
         System.out.println("Итого: " + cartSum + " руб.");
     }
 }
